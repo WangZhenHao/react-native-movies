@@ -19,9 +19,13 @@ const TabIcon = ({ focused, icon, title }: any) => {
         );
     } else {
         return (
-            <View className="size-full justify-center items-center rounded-full mt-4">
-                <Image source={icon} className="size-5" tintColor="#A8B5DB" />
-            </View>
+                <View className="rounded-full w-[112px] h-[55px] items-center justify-center mt-4">
+                    <Image
+                        source={icon}
+                        className="size-5"
+                        tintColor="#A8B5DB"
+                    />
+                </View>
         );
     }
 };
@@ -31,10 +35,10 @@ const _layout = () => {
             screenOptions={{
                 tabBarShowLabel: false,
                 tabBarItemStyle: {
-                    // width: '100%',
-                    // height: '100%',
-                    // justifyContent: 'center',
-                    // alignItems: 'center',
+                    width: "100%",
+                    height: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
                 },
                 tabBarStyle: {
                     backgroundColor: "#0f0D23",
@@ -73,6 +77,7 @@ const _layout = () => {
                             focused={focused}
                             icon={icons.search}
                             title="Search"
+                            // hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         />
                     ),
                 }}
