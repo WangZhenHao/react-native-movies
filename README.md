@@ -1,5 +1,12 @@
 # Welcome to your Expo app 👋
 
+源码：https://github.com/adrianhajdin/react-native-movie-app/tree/main/app
+
+figma: https://www.figma.com/design/c6NHYQem8G59odVSijIjl2/Movie-App-w--React-Native?node-id=2-2&p=f
+
+
+接口文档：https://developer.themoviedb.org/docs/getting-started
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
