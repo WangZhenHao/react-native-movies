@@ -30,7 +30,9 @@ jobs:
 
       # 5. 登录 Expo
       - name: Login Expo
-        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+        run: |
+         echo ${{ secrets.EXPO_TOKEN }}
+         eas login --token ${{ secrets.EXPO_TOKEN }}
 
       # 6. 构建 APK（关键）
       - name: Build APK
