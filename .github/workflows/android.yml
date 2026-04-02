@@ -41,7 +41,8 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           eas build -p android --profile preview --non-interactive --wait --json > result.json
-          echo "BUILD_URL=$(cat result.json | jq -r '.artifacts.buildUrl')" >> $GITHUB_ENV
+          cat result.json
+          echo "BUILD_URL=$(jq -r '.[0].artifacts.buildUrl' result.json)" >> $GITHUB_ENV
 
       # 7. 获取构建下载地址
       # - name: Get build URL
