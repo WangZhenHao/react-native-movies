@@ -1,18 +1,159 @@
+import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
+import TrendingCard from "@/components/TrendingCard";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
+import { getMovies, getPopluarMovies } from "@/services/api";
+import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
-import { Image, ScrollView, View } from "react-native";
+import {
+    FlatList,
+    Image,
+    Text,
+    View
+} from "react-native";
 
 export default function Index() {
-    const router = useRouter()
+    const router = useRouter();
+
+    const {
+        data: trendingMovies,
+        loading: trendingLoading,
+        error: trendingError,
+    } = useFetch(() => getPopluarMovies());
+
+    const {
+        data: movies,
+        loading,
+        error,
+    } = useFetch(() => getMovies({ query: "" }));
+
     return (
         <View className="flex-1 bg-primary">
             <Image source={images.bg} className="absolute w-full" />
-            <ScrollView className="flex-1 px-5"> 
-                <Image source={icons.logo} className="w-[58px] h-[44px] mt-20 mb-5 mx-auto" />
-                <SearchBar onPress={() => router.push("/search")} placeholder="Search for a movie or tv show" />
-            </ScrollView>
+            <FlatList
+                data={movies}
+                renderItem={({ item }) => <MovieCard {...item} />}
+                keyExtractor={(item) => item.id}
+                numColumns={3}
+                columnWrapperStyle={{
+                    justifyContent: "flex-start",
+                    gap: 15,
+                    paddingRight: 5,
+                    marginBlock: 10,
+                }}
+                contentContainerStyle={{
+                    paddingHorizontal: 15,
+                    paddingBottom: 100,
+                  }}
+                ListHeaderComponent={
+                    <>
+                        <Image
+                            source={icons.logo}
+                            className="w-[58px] h-[44px] mt-20 mb-5 mx-auto"
+                        />
+                        <SearchBar
+                            onPress={() => router.push("/search")}
+                            placeholder="Search for a movie or tv show"
+                        />
+                        <View>
+                            <Text className="text-lg text-white font-bold mt-5">
+                                Top Movies
+                            </Text>
+                            <FlatList
+                                horizontal
+                                data={trendingMovies}
+                                showsHorizontalScrollIndicator={false}
+                                className="mt-2 mb-2"
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => (
+                                    <TrendingCard {...item} />
+                                )}
+                                ItemSeparatorComponent={() => (
+                                    <View className="w-4" />
+                                )}
+                                // numColumns={3}
+                            ></FlatList>
+                        </View>
+                        <Text className="text-lg text-white font-bold mt-5">
+                            Latest Movies
+                        </Text>
+                        
+                        {error || trendingError ? (
+                            <Text className="text-white">
+                                {error?.message || trendingError?.message}
+                            </Text>
+                        ) : null}
+                    </>
+                }
+            />
+            {/* <ScrollView
+                className="px-5"
+                style={
+                    {
+                        // paddingVertical: 20,
+                        // paddingHorizontal: 20
+                    }
+                }
+                contentContainerStyle={{
+                    paddingBottom: 10,
+                    // minHeight: "100%",
+                }}
+            >
+                <Image
+                    source={icons.logo}
+                    className="w-[58px] h-[44px] mt-20 mb-5 mx-auto"
+                />
+
+                {loading || trendingLoading ? (
+                    <ActivityIndicator size={"large"} color="#0000ff" />
+                ) : error || trendingError ? (
+                    <Text className="text-white">{error?.message || trendingError?.message}</Text>
+                ) : (
+                    <>
+                        <SearchBar
+                            onPress={() => router.push("/search")}
+                            placeholder="Search for a movie or tv show"
+                        />
+                        <View>
+                            <Text className="text-lg text-white font-bold mt-5">
+                                Top Movies
+                            </Text>
+                            <FlatList
+                                horizontal
+                                data={trendingMovies}
+                                showsHorizontalScrollIndicator={false}
+
+                                className="mt-2 mb-2"
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => (
+                                    <TrendingCard {...item} />
+                                )}
+                                ItemSeparatorComponent={() => <View className="w-4" />}
+                                // numColumns={3}
+                            ></FlatList>
+                        </View>
+                        <Text className="text-lg text-white font-bold mt-5">
+                            Latest Movies
+                        </Text>
+                        <FlatList
+                            className="mt-2 pb-2"
+                            // horizontal
+                            scrollEnabled={false}
+                            data={movies}
+                            renderItem={({ item }) => <MovieCard {...item} />}
+                            keyExtractor={(item) => item.id}
+                            numColumns={3}
+                            columnWrapperStyle={{
+                                justifyContent: "flex-start",
+                                gap: 20,
+                                paddingRight: 5,
+                                marginBlock: 10,
+                            }}
+                        />
+                    </>
+                )}
+            </ScrollView> */}
         </View>
     );
 }
