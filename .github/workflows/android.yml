@@ -29,13 +29,15 @@ jobs:
         run: npm install -g eas-cli
 
       # 5. 登录 Expo
-      - name: Login Expo
-        run: |
-         echo ${{ secrets.EXPO_TOKEN }}
-         eas login --token ${{ secrets.EXPO_TOKEN }}
+      # - name: Login Expo
+      #   run: |
+      #    echo ${{ secrets.EXPO_TOKEN }}
+      #    eas login --token ${{ secrets.EXPO_TOKEN }}
 
       # 6. 构建 APK（关键）
       - name: Build APK
+        env:  
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: eas build -p android --profile preview --non-interactive --wait
 
       # 7. 获取构建下载地址
