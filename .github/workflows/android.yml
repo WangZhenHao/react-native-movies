@@ -36,15 +36,18 @@ jobs:
 
       # 6. 构建 APK（关键）
       - name: Build APK
+        id: build
         env:  
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build -p android --profile preview --non-interactive --wait
+        run: |
+          eas build -p android --profile preview --non-interactive --wait --json > result.json
+          echo "BUILD_URL=$(cat result.json | jq -r '.artifacts.buildUrl')" >> $GITHUB_ENV
 
       # 7. 获取构建下载地址
-      - name: Get build URL
-        run: |
-          eas build:list --platform android --limit 1 --json > build.json
-          echo "BUILD_URL=$(cat build.json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
+      # - name: Get build URL
+      #   run: |
+      #     eas build:list --platform android --limit 1 --json > build.json
+      #     echo "BUILD_URL=$(cat build.json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
 
       # 8. 下载 APK
       - name: Download APK
