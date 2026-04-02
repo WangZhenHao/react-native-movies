@@ -10,7 +10,7 @@ interface Props {
   }
 const SearchBar = ({ onPress, placeholder, value = '', onChangeText }: Props) => {
     return (
-        <View className="flex-row items-center bg-dark-200 px-5 py-4 rounded-full">
+        <View className="flex-row items-center bg-dark-200 px-5 rounded-full">
             <Image
                 source={icons.search}
                 className="size-5"
@@ -20,7 +20,7 @@ const SearchBar = ({ onPress, placeholder, value = '', onChangeText }: Props) =>
                 placeholder={placeholder || "Search"}
                 onPress={onPress}
                 value={value}
-                className="flex-1 ml-2 text-white"
+                className="flex-1 ml-2 text-white h-[44px]"
                 placeholderTextColor={"#a8b5db"}
                 onChangeText={onChangeText}
             />

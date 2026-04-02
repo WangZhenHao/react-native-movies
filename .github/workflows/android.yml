@@ -1,0 +1,55 @@
+name: Build Android APK
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 拉代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Node 环境
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. 安装依赖
+      - name: Install dependencies
+        run: npm install
+
+      # 4. 安装 EAS
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      # 5. 登录 Expo
+      - name: Login Expo
+        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+
+      # 6. 构建 APK（关键）
+      - name: Build APK
+        run: eas build -p android --profile preview --non-interactive --wait
+
+      # 7. 获取构建下载地址
+      - name: Get build URL
+        run: |
+          eas build:list --platform android --limit 1 --json > build.json
+          echo "BUILD_URL=$(cat build.json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
+
+      # 8. 下载 APK
+      - name: Download APK
+        run: curl -L $BUILD_URL -o app.apk
+
+      # 9. 发布到 Release
+      - name: Release APK
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
