@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface MovieInfoProps {
     lable: string;
@@ -30,6 +31,7 @@ const MovieInfo = ({ lable, value }: MovieInfoProps) => {
 };
 const Details = () => {
     const { id } = useLocalSearchParams();
+    const safeArea = useSafeAreaInsets()
 
     const {
         data: movie,
@@ -40,7 +42,7 @@ const Details = () => {
         <View className="flex-1 bg-primary">
             <ScrollView
                 contentContainerStyle={{
-                    paddingBottom: 80,
+                    paddingBottom: safeArea.bottom + 80,
                 }}
             >
                 {loading && (
@@ -94,7 +96,9 @@ const Details = () => {
                     <MovieInfo value={movie?.production_companies?.map(g => g.name).join(' - ') || 'N/A'} lable="Production Companies" />
                 </View>
             </ScrollView>
-            <TouchableOpacity onPress={router.back} className="absolute bottom-5 left-0 right-0 bg-accent flex-row justify-center py-3.5 mx-5 rounded-lg">
+            <TouchableOpacity style={{
+              bottom: safeArea.bottom + 4,
+            }} onPress={router.back} className="absolute items-center left-0 right-0 bg-accent flex-row justify-center py-3.5 mx-5 rounded-lg">
               <Image className=" rotate-180 mr-0.5" source={icons.arrow} tintColor={'#fff'}></Image>
               <Text className="text-white">Go Back</Text>
             </TouchableOpacity>
