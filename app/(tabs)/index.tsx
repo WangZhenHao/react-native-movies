@@ -3,36 +3,53 @@ import SearchBar from "@/components/SearchBar";
 import TrendingCard from "@/components/TrendingCard";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { getMovies, getPopluarMovies } from "@/services/api";
+import { getMovies2, getPopluarMovies } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
-import {
-    FlatList,
-    Image,
-    Text,
-    View
-} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { FlatList, Image, Text, View } from "react-native";
 
 export default function Index() {
     const router = useRouter();
+    const [list, setList] = useState<any[]>([]);
 
     const {
         data: trendingMovies,
         loading: trendingLoading,
         error: trendingError,
     } = useFetch(() => getPopluarMovies());
+    const formData = useRef({
+        page: 1,
+        sort_by: "popularity.desc",
+    });
 
     const {
         data: movies,
         loading,
         error,
-    } = useFetch(() => getMovies({ query: "" }));
+        refetch,
+    } = useFetch(() => {
+        return getMovies2(formData.current);
+    }, false);
+
+    useEffect(() => {
+        setList([...list, ...movies]);
+    }, [movies]);
+
+    useEffect(() => {
+        refetch();
+    }, []);
+
+    const onEndReached = () => {
+        formData.current.page += 1;
+        refetch();
+    };
 
     return (
         <View className="flex-1 bg-primary">
             <Image source={images.bg} className="absolute w-full" />
             <FlatList
-                data={movies}
+                data={list}
                 renderItem={({ item }) => <MovieCard {...item} />}
                 keyExtractor={(item) => item.id}
                 numColumns={3}
@@ -45,7 +62,8 @@ export default function Index() {
                 contentContainerStyle={{
                     paddingHorizontal: 15,
                     paddingBottom: 100,
-                  }}
+                }}
+                onEndReached={onEndReached}
                 ListHeaderComponent={
                     <>
                         <Image
@@ -78,7 +96,7 @@ export default function Index() {
                         <Text className="text-lg text-white font-bold mt-5">
                             Latest Movies
                         </Text>
-                        
+
                         {error || trendingError ? (
                             <Text className="text-white">
                                 {error?.message || trendingError?.message}
