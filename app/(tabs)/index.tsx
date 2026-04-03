@@ -33,7 +33,10 @@ export default function Index() {
     }, false);
 
     useEffect(() => {
-        setList([...list, ...movies]);
+        if(movies && movies.length > 0) {
+            setList([...list, ...movies]);
+        }
+        
     }, [movies]);
 
     useEffect(() => {
