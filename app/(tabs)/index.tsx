@@ -7,7 +7,7 @@ import { getMovies2, getPopluarMovies } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
 export default function Index() {
     const router = useRouter();
@@ -17,6 +17,8 @@ export default function Index() {
         data: trendingMovies,
         loading: trendingLoading,
         error: trendingError,
+        reset: resetTrendingMovies,
+        refetch: refetchTrendingMovies,
     } = useFetch(() => getPopluarMovies());
     const formData = useRef({
         page: 1,
@@ -33,6 +35,7 @@ export default function Index() {
     }, false);
 
     useEffect(() => {
+        if(loading) return
         if(movies && movies.length > 0) {
             setList([...list, ...movies]);
         }
@@ -42,6 +45,14 @@ export default function Index() {
     useEffect(() => {
         refetch();
     }, []);
+
+    const refressHanlde = () => {
+        setList([]);
+        formData.current.page = 1;
+        refetch();
+        resetTrendingMovies()
+        refetchTrendingMovies()
+    };
 
     const onEndReached = () => {
         formData.current.page += 1;
@@ -62,11 +73,22 @@ export default function Index() {
                     paddingRight: 5,
                     marginBlock: 10,
                 }}
+                onRefresh={refressHanlde}
                 contentContainerStyle={{
                     paddingHorizontal: 15,
                     paddingBottom: 100,
                 }}
+                refreshing={loading}
                 onEndReached={onEndReached}
+                ListFooterComponent={
+                    <View className="flex-row justify-center items-center">
+                        {loading ? (
+                            <ActivityIndicator size={"large"} color="#fff" />
+                        ) : error ? (
+                            <Text className="text-white">{error?.message}</Text>
+                        ) : null}
+                    </View>
+                }
                 ListHeaderComponent={
                     <>
                         <Image
